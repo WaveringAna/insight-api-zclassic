@@ -1,0 +1,37 @@
+[
+  {
+    "poolName": "Bitfly",
+    "url": "https://zcash.flypool.org/",
+    "searchStrings": [
+      "/flypool/"
+    ]
+  },
+  {
+    "poolName": "NaN",
+    "url": "",
+    "searchStrings": [
+      "/NaN"
+    ]
+  },
+  {
+    "poolName": "Suprnova",
+    "url": "https://zcl.suprnova.cc/",
+    "searchStrings": [
+      "/nodeStratum/"
+    ]
+  },
+  {
+    "poolName": "Zmine",
+    "url": "https://zmine.io/",
+    "searchStrings": [
+      "{ZMINE.IO}"
+    ]
+  },
+  {
+    "poolName": "Someone using z-nomp!",
+    "url": "https://github.com/joshuayabut/z-nomp/",
+    "searchStrings": [
+      "Z-NOMP! https://github.com/joshuayabut/z-nomp"
+    ]
+  }
+]

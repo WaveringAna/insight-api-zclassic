@@ -1,0 +1,94 @@
+{
+  "name": "insight-api-zcash",
+  "description": "A Zcash blockchain REST and web socket API service for Bitcore Node.",
+  "version": "0.4.3",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/str4d/insight-api-zcash.git"
+  },
+  "contributors": [
+    {
+      "name": "Gustavo Cortez",
+      "email": "cmgustavo83@gmail.com"
+    },
+    {
+      "name": "Ivan Socolsky",
+      "email": "jungans@gmail.com"
+    },
+    {
+      "name": "Juan Ignacio Sosa Lopez",
+      "email": "bechilandia@gmail.com"
+    },
+    {
+      "name": "Manuel Araoz",
+      "email": "manuelaraoz@gmail.com"
+    },
+    {
+      "name": "Matias Alejo Garcia",
+      "email": "ematiu@gmail.com"
+    },
+    {
+      "name": "Mario Colque",
+      "email": "colquemario@gmail.com"
+    },
+    {
+      "name": "Patrick Nagurny",
+      "email": "patrick@bitpay.com"
+    },
+    {
+      "name": "Braydon Fuller",
+      "email": "braydon@bitpay.com"
+    },
+    {
+      "name": "Jack Grigg",
+      "email": "jack@z.cash"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/str4d/insight-api-zcash/issues"
+  },
+  "homepage": "https://github.com/str4d/insight-api-zcash",
+  "license": "MIT",
+  "keywords": [
+    "insight",
+    "insight api",
+    "blockchain",
+    "zcash api",
+    "blockchain api",
+    "json",
+    "bitcore"
+  ],
+  "engines": {
+    "node": ">=0.12.0"
+  },
+  "scripts": {
+    "test": "NODE_ENV=test mocha -R spec --recursive"
+  },
+  "main": "lib",
+  "bitcoreNode": "lib",
+  "dependencies": {
+    "async": "*",
+    "bitcore-lib-zcash": "github:str4d/bitcore-lib-zcash",
+    "bitcore-message-zcash": "github:str4d/bitcore-message-zcash",
+    "body-parser": "^1.13.3",
+    "compression": "^1.6.1",
+    "lodash": "^2.4.1",
+    "lru-cache": "^4.0.1",
+    "morgan": "^1.7.0",
+    "request": "^2.64.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "proxyquire": "^1.7.2",
+    "should": "^8.3.1",
+    "sinon": "^1.10.3"
+  },
+  "gitHead": "0f35fcb6f64456aca40f649a95e18bd62cf34a70",
+  "readme": "# Insight API\n\nA Zcash blockchain REST and web socket API service for [Bitcore Node](https://github.com/bitpay/bitcore-node).\n\nThis is a backend-only service. If you're looking for the web frontend application, take a look at https://github.com/bitpay/insight-ui.\n\n## Getting Started\n\n```bashl\nnpm install -g bitcore-node@latest\nbitcore-node create mynode\ncd mynode\nbitcore-node install insight-api-zcash\nbitcore-node start\n```\n\nThe API endpoints will be available by default at: `http://localhost:3001/insight-api/`\n\n## Prerequisites\n\n- [Bitcore Node 3.x](https://github.com/bitpay/bitcore-node)\n\n**Note:** You can use an existing Zcash data directory, however `txindex`, `addressindex`, `timestampindex` and `spentindex` needs to be set to true in `zcash.conf`, as well as a few other additional fields.\n\n## Notes on Upgrading from v0.3\n\nThe unspent outputs format now has `satoshis` and `height`:\n```\n[\n  {\n    \"address\":\"mo9ncXisMeAoXwqcV5EWuyncbmCcQN4rVs\",\n    \"txid\":\"d5f8a96faccf79d4c087fa217627bb1120e83f8ea1a7d84b1de4277ead9bbac1\",\n    \"vout\":0,\n    \"scriptPubKey\":\"76a91453c0307d6851aa0ce7825ba883c6bd9ad242b48688ac\",\n    \"amount\":0.000006,\n    \"satoshis\":600,\n    \"confirmations\":0,\n    \"ts\":1461349425\n  },\n  {\n    \"address\": \"mo9ncXisMeAoXwqcV5EWuyncbmCcQN4rVs\",\n    \"txid\": \"bc9df3b92120feaee4edc80963d8ed59d6a78ea0defef3ec3cb374f2015bfc6e\",\n    \"vout\": 1,\n    \"scriptPubKey\": \"76a91453c0307d6851aa0ce7825ba883c6bd9ad242b48688ac\",\n    \"amount\": 0.12345678,\n    \"satoshis: 12345678,\n    \"confirmations\": 1,\n    \"height\": 300001\n  }\n]\n```\nThe `timestamp` property will only be set for unconfirmed transactions and `height` can be used for determining block order. The `confirmationsFromCache` is nolonger set or necessary, confirmation count is only cached for the time between blocks.\n\nThere is a new `GET` endpoint or raw blocks at `/rawblock/<blockHash>`:\n\nResponse format:\n```\n{\n  \"rawblock\": \"blockhexstring...\"\n}\n```\n\nThere are a few changes to the `GET` endpoint for `/addr/[:address]`:\n\n- The list of txids in an address summary does not include orphaned transactions\n- The txids will be sorted in block order\n- The list of txids will be limited at 1000 txids\n- There are two new query options \"from\" and \"to\" for pagination of the txids (e.g. `/addr/[:address]?from=1000&to=2000`)\n\nSome additional general notes:\n- The transaction history for an address will be sorted in block order\n- The response for the `/sync` endpoint does not include `startTs` and `endTs` as the sync is no longer relevant as indexes are built in zcashd.\n- The endpoint for `/peer` is no longer relevant connection to zcashd is via ZMQ.\n- `/tx` endpoint results will now include block height, and spentTx related fields will be set to `null` if unspent.\n- `/block` endpoint results does not include `confirmations` and will include `poolInfo`.\n\n## Notes on Upgrading from v0.2\n\nSome of the fields and methods are not supported:\n\nThe `/tx/<txid>` endpoint JSON response will not include the following fields on the \"vin\"\nobject:\n- `doubleSpentTxId` // double spends are not currently tracked\n- `isConfirmed` // confirmation of the previous output\n- `confirmations` // confirmations of the previous output\n- `unconfirmedInput`\n\nThe `/tx/<txid>` endpoint JSON response will not include the following fields on the \"vout\"\nobject.\n- `spentTs`\n\nThe `/status?q=getTxOutSetInfo` method has also been removed due to the query being very slow and locking zcashd.\n\nPlug-in support for Insight API is also no longer available, as well as the endpoints:\n- `/email/retrieve`\n- `/rates/:code`\n\nCaching support has not yet been added in the v0.3 upgrade.\n\n## Query Rate Limit\n\nTo protect the server, insight-api has a built it query rate limiter. It can be configurable in `bitcore-node.json` with:\n``` json\n  \"servicesConfig\": {\n    \"insight-api\": {\n      \"rateLimiterOptions\": {\n        \"whitelist\": [\"::ffff:127.0.0.1\"]\n      }\n    }\n  }\n```\nWith all the configuration options available: https://github.com/bitpay/insight-api/blob/master/lib/ratelimiter.js#L10-17\n\nOr disabled entirely with:\n``` json\n  \"servicesConfig\": {\n    \"insight-api\": {\n      \"disableRateLimiter\": true\n    }\n  }\n  ```\n  \n\n## API HTTP Endpoints\n\n### Block\n```\n  /insight-api/block/[:hash]\n  /insight-api/block/00000000a967199a2fad0877433c93df785a8d8ce062e5f9b451cd1397bdbf62\n```\n\n### Block Index\nGet block hash by height\n```\n  /insight-api/block-index/[:height]\n  /insight-api/block-index/0\n```\nThis would return:\n```\n{\n  \"blockHash\":\"000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f\"\n}\n```\nwhich is the hash of the Genesis block (0 height)\n\n\n### Raw Block\n```\n  /insight-api/rawblock/[:blockHash]\n  /insight-api/rawblock/[:blockHeight]\n```\n\nThis would return:\n```\n{\n  \"rawblock\":\"blockhexstring...\"\n}\n```\n\n### Block Summaries\n\nGet block summaries by date:\n```\n  /insight-api/blocks?limit=3&blockDate=2016-04-22\n```\n\nExample response:\n```\n{\n  \"blocks\": [\n    {\n      \"height\": 408495,\n      \"size\": 989237,\n      \"hash\": \"00000000000000000108a1f4d4db839702d72f16561b1154600a26c453ecb378\",\n      \"time\": 1461360083,\n      \"txlength\": 1695,\n      \"poolInfo\": {\n        \"poolName\": \"BTCC Pool\",\n        \"url\": \"https://pool.btcc.com/\"\n      }\n    }\n  ],\n  \"length\": 1,\n  \"pagination\": {\n    \"next\": \"2016-04-23\",\n    \"prev\": \"2016-04-21\",\n    \"currentTs\": 1461369599,\n    \"current\": \"2016-04-22\",\n    \"isToday\": true,\n    \"more\": true,\n    \"moreTs\": 1461369600\n  }\n}\n```\n\n### Transaction\n```\n  /insight-api/tx/[:txid]\n  /insight-api/tx/525de308971eabd941b139f46c7198b5af9479325c2395db7f2fb5ae8562556c\n  /insight-api/rawtx/[:rawid]\n  /insight-api/rawtx/525de308971eabd941b139f46c7198b5af9479325c2395db7f2fb5ae8562556c\n```\n\n### Address\n```\n  /insight-api/addr/[:addr][?noTxList=1][&from=&to=]\n  /insight-api/addr/mmvP3mTe53qxHdPqXEvdu8WdC7GfQ2vmx5?noTxList=1\n  /insight-api/addr/mmvP3mTe53qxHdPqXEvdu8WdC7GfQ2vmx5?from=1000&to=2000\n```\n\n### Address Properties\n```\n  /insight-api/addr/[:addr]/balance\n  /insight-api/addr/[:addr]/totalReceived\n  /insight-api/addr/[:addr]/totalSent\n  /insight-api/addr/[:addr]/unconfirmedBalance\n```\nThe response contains the value in Satoshis.\n\n### Unspent Outputs\n```\n  /insight-api/addr/[:addr]/utxo\n```\nSample return:\n```\n[\n  {\n    \"address\":\"mo9ncXisMeAoXwqcV5EWuyncbmCcQN4rVs\",\n    \"txid\":\"d5f8a96faccf79d4c087fa217627bb1120e83f8ea1a7d84b1de4277ead9bbac1\",\n    \"vout\":0,\n    \"scriptPubKey\":\"76a91453c0307d6851aa0ce7825ba883c6bd9ad242b48688ac\",\n    \"amount\":0.000006,\n    \"satoshis\":600,\n    \"confirmations\":0,\n    \"ts\":1461349425\n  },\n  {\n    \"address\": \"mo9ncXisMeAoXwqcV5EWuyncbmCcQN4rVs\",\n    \"txid\": \"bc9df3b92120feaee4edc80963d8ed59d6a78ea0defef3ec3cb374f2015bfc6e\",\n    \"vout\": 1,\n    \"scriptPubKey\": \"76a91453c0307d6851aa0ce7825ba883c6bd9ad242b48688ac\",\n    \"amount\": 0.12345678,\n    \"satoshis: 12345678,\n    \"confirmations\": 1,\n    \"height\": 300001\n  }\n]\n```\n\n### Unspent Outputs for Multiple Addresses\nGET method:\n```\n  /insight-api/addrs/[:addrs]/utxo\n  /insight-api/addrs/2NF2baYuJAkCKo5onjUKEPdARQkZ6SYyKd5,2NAre8sX2povnjy4aeiHKeEh97Qhn97tB1f/utxo\n```\n\nPOST method:\n```\n  /insight-api/addrs/utxo\n```\n\nPOST params:\n```\naddrs: 2NF2baYuJAkCKo5onjUKEPdARQkZ6SYyKd5,2NAre8sX2povnjy4aeiHKeEh97Qhn97tB1f\n```\n\n### Transactions by Block\n```\n  /insight-api/txs/?block=HASH\n  /insight-api/txs/?block=00000000fa6cf7367e50ad14eb0ca4737131f256fc4c5841fd3c3f140140e6b6\n```\n### Transactions by Address\n```\n  /insight-api/txs/?address=ADDR\n  /insight-api/txs/?address=mmhmMNfBiZZ37g1tgg2t8DDbNoEdqKVxAL\n```\n\n### Transactions for Multiple Addresses\nGET method:\n```\n  /insight-api/addrs/[:addrs]/txs[?from=&to=]\n  /insight-api/addrs/2NF2baYuJAkCKo5onjUKEPdARQkZ6SYyKd5,2NAre8sX2povnjy4aeiHKeEh97Qhn97tB1f/txs?from=0&to=20\n```\n\nPOST method:\n```\n  /insight-api/addrs/txs\n```\n\nPOST params:\n```\naddrs: 2NF2baYuJAkCKo5onjUKEPdARQkZ6SYyKd5,2NAre8sX2povnjy4aeiHKeEh97Qhn97tB1f\nfrom (optional): 0\nto (optional): 20\nnoAsm (optional): 1 (will omit script asm from results)\nnoScriptSig (optional): 1 (will omit the scriptSig from all inputs)\nnoSpent (option): 1 (will omit spent information per output)\n```\n\nSample output:\n```\n{ totalItems: 100,\n  from: 0,\n  to: 20,\n  items:\n    [ { txid: '3e81723d069b12983b2ef694c9782d32fca26cc978de744acbc32c3d3496e915',\n       version: 1,\n       locktime: 0,\n       vin: [Object],\n       vout: [Object],\n       blockhash: '00000000011a135e5277f5493c52c66829792392632b8b65429cf07ad3c47a6c',\n       confirmations: 109367,\n       time: 1393659685,\n       blocktime: 1393659685,\n       valueOut: 0.3453,\n       size: 225,\n       firstSeenTs: undefined,\n       valueIn: 0.3454,\n       fees: 0.0001 },\n      { ... },\n      { ... },\n      ...\n      { ... }\n    ]\n }\n```\n\nNote: if pagination params are not specified, the result is an array of transactions.\n\n### Transaction Broadcasting\nPOST method:\n```\n  /insight-api/tx/send\n```\nPOST params:\n```\n  rawtx: \"signed transaction as hex string\"\n\n  eg\n\n  rawtx: 01000000017b1eabe0209b1fe794124575ef807057c77ada2138ae4fa8d6c4de0398a14f3f00000000494830450221008949f0cb400094ad2b5eb399d59d01c14d73d8fe6e96df1a7150deb388ab8935022079656090d7f6bac4c9a94e0aad311a4268e082a725f8aeae0573fb12ff866a5f01ffffffff01f0ca052a010000001976a914cbc20a7664f2f69e5355aa427045bc15e7c6c77288ac00000000\n\n```\nPOST response:\n```\n  {\n      txid: [:txid]\n  }\n\n  eg\n\n  {\n      txid: \"c7736a0a0046d5a8cc61c8c3c2821d4d7517f5de2bc66a966011aaa79965ffba\"\n  }\n```\n\n### Historic Blockchain Data Sync Status\n```\n  /insight-api/sync\n```\n\n### Live Network P2P Data Sync Status\n```\n  /insight-api/peer\n```\n\n### Status of the Zcash Network\n```\n  /insight-api/status?q=xxx\n```\n\nWhere \"xxx\" can be:\n\n * getInfo\n * getDifficulty\n * getBestBlockHash\n * getLastBlockHash\n\n\n### Utility Methods\n```\n  /insight-api/utils/estimatefee[?nbBlocks=2]\n```\n\n\n## Web Socket API\nThe web socket API is served using [socket.io](http://socket.io).\n\nThe following are the events published by insight:\n\n`tx`: new transaction received from network. This event is published in the 'inv' room. Data will be a app/models/Transaction object.\nSample output:\n```\n{\n  \"txid\":\"00c1b1acb310b87085c7deaaeba478cef5dc9519fab87a4d943ecbb39bd5b053\",\n  \"processed\":false\n  ...\n}\n```\n\n\n`block`: new block received from network. This event is published in the `inv` room. Data will be a app/models/Block object.\nSample output:\n```\n{\n  \"hash\":\"000000004a3d187c430cd6a5e988aca3b19e1f1d1727a50dead6c8ac26899b96\",\n  \"time\":1389789343,\n  ...\n}\n```\n\n`<zcashAddress>`: new transaction concerning <zcashAddress> received from network. This event is published in the `<zcashAddress>` room.\n\n`status`: every 1% increment on the sync task, this event will be triggered. This event is published in the `sync` room.\n\nSample output:\n```\n{\n  blocksToSync: 164141,\n  syncedBlocks: 475,\n  upToExisting: true,\n  scanningBackward: true,\n  isEndGenesis: true,\n  end: \"000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943\",\n  isStartGenesis: false,\n  start: \"000000009f929800556a8f3cfdbe57c187f2f679e351b12f7011bfc276c41b6d\"\n}\n```\n\n### Example Usage\n\nThe following html page connects to the socket.io insight API and listens for new transactions.\n\nhtml\n```\n<html>\n<body>\n  <script src=\"http://<insight-server>:<port>/socket.io/socket.io.js\"></script>\n  <script>\n    eventToListenTo = 'tx'\n    room = 'inv'\n\n    var socket = io(\"http://<insight-server>:<port>/\");\n    socket.on('connect', function() {\n      // Join the room.\n      socket.emit('subscribe', room);\n    })\n    socket.on(eventToListenTo, function(data) {\n      console.log(\"New transaction received: \" + data.txid)\n    })\n  </script>\n</body>\n</html>\n```\n\n## License\n(The MIT License)\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n'Software'), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be\nincluded in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n",
+  "readmeFilename": "README.md",
+  "_id": "insight-api-zcash@0.4.3",
+  "_shasum": "4f3e5d0abba18db8242845d7997730c1eec8f66c",
+  "_from": "jamzed/insight-api-zcash",
+  "_resolved": "git://github.com/jamzed/insight-api-zcash.git#dc08b4a28fcfd344fa1b1a3dc928372b3a6b1873"
+}
