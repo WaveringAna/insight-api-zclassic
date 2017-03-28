@@ -14,13 +14,6 @@
     ]
   },
   {
-    "poolName": "Suprnova",
-    "url": "https://zcl.suprnova.cc/",
-    "searchStrings": [
-      "/nodeStratum/"
-    ]
-  },
-  {
     "poolName": "Zmine",
     "url": "https://zmine.io/",
     "searchStrings": [
@@ -29,9 +22,52 @@
   },
   {
     "poolName": "Someone using z-nomp!",
-    "url": "https://github.com/joshuayabut/z-nomp/",
+    "url": "https://github.com/z-classic/z-nomp/",
     "searchStrings": [
       "Z-NOMP! https://github.com/joshuayabut/z-nomp"
+    ]
+  },
+  {
+    "poolName": "Someone using equihash-solomining!",
+    "url": "https://github.com/aayanl/equihash-solomining",
+    "searchStrings": [
+      "EquihashSolominer!-github.com/aayanl/equihash-solomining"
+    ]
+  },
+  {
+    "poolName": "Crypto Broker",
+    "url": "https://pool.cryptobroker.io",
+    "searchStrings": [
+      "CryptoBroker - https://pool.cryptobroker.io"
+    ]
+  },
+  {
+    "poolName": "Zpool.ca",
+    "url": "http://www.zpool.ca/",
+    "searchStrings": [
+      "www.zpool.ca"
+    ]
+  },
+  {
+    "poolName": "miningspeed",
+    "url": "http://pool.miningspeed.com",
+    "searchStrings": [
+      "miningspeed.com - http://pool.miningspeed.com"
+    ]
+  },
+  {
+    "poolName": "Block Operations",
+    "searchStrings": [
+      "Block Operations Zpool1",
+      "Block Operations Zpool2"
+    ]
+  },
+  {
+    "poolName": "Block Operations",
+    "url": "http://luckpool.org",
+    "searchStrings": [
+      "luckpool.org http://luckpool.org",
+      "luckpool.org by hellcatz"
     ]
   }
 ]
